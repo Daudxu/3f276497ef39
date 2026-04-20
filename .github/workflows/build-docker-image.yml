@@ -32,14 +32,20 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      # 新增步骤：将 GitHub 用户名转换为小写并存入环境变量
+      - name: Lowercase Repository Owner
+        run: |
+          echo "REPO_OWNER=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_ENV
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
           platforms: linux/amd64,linux/arm64
+          # 修改这里：使用刚刚转换好的小写环境变量 ${{ env.REPO_OWNER }}
           tags: |
-            ghcr.io/${{ github.repository_owner }}/aichat:1627
+            ghcr.io/${{ env.REPO_OWNER }}/aichat:1627
           labels: |
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
             org.opencontainers.image.description=HTTP Server
